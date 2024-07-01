@@ -1,0 +1,71 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Vm {
+  client         Client?  @relation(fields: [clientId], references: [id])
+  clientId       String?
+  createdAt      DateTime @default(now())
+  id             String   @id @default(cuid())
+  name           String?
+  specifications String?
+  updatedAt      DateTime @updatedAt
+}
+
+model Client {
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  id           String        @id @default(cuid())
+  ips          Ip[]
+  name         String?
+  updatedAt    DateTime      @updatedAt
+  vms          Vm[]
+}
+
+model Ip {
+  address   String?
+  client    Client?  @relation(fields: [clientId], references: [id])
+  clientId  String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Agent {
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  id           String        @id @default(cuid())
+  name         String?
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  agent           Agent?    @relation(fields: [agentId], references: [id])
+  agentId         String?
+  client          Client?   @relation(fields: [clientId], references: [id])
+  clientId        String?
+  createdAt       DateTime  @default(now())
+  date            DateTime?
+  id              String    @id @default(cuid())
+  trainingDetails String?
+  updatedAt       DateTime  @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
